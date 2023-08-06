@@ -4,7 +4,7 @@ PortSystem       1.0
 PortGroup        makefile 1.0
 
 name             danectl
-version          0.8.3
+version          0.8.4
 revision         0
 
 categories       security
@@ -25,41 +25,44 @@ long_description {*}${description}. \
                  servers. Eventually, it could render certificate \
                  authorities unnecessary. DNSSEC has become very easy.
 depends_lib      port:libidn2
+supported_archs  noarch
+platforms        any
+
 default_variants +tlsa +sshfp +openpgpkey +smimea
 
 variant tlsa description {Add TLSA support for TLS servers} {
-    depends_lib-append \
+    depends_run-append \
         port:certbot \
         port:openssl \
         port:coreutils
 }
 
 variant sshfp description {Add SSHFP support for ssh servers} {
-    depends_lib-append \
+    depends_run-append \
         port:openssh
 }
 
 variant openpgpkey description {Add OPENPGPKEY support for GnuPG keys} {
-    depends_lib-append \
+    depends_run-append \
         port:gnupg2
 }
 
 variant smimea description {Add SMIMEA support for S/MIME keys} {
     # Suppress a port lint warning about port:openssl appearing twice
     if {![variant_isset tlsa]} {
-        depends_lib-append \
+        depends_run-append \
             port:openssl
     }
 }
 
 homepage         https://raf.org/${name}/
 master_sites     ${homepage}download/ \
-                 https://web.archive.org/web/20230611042305/${homepage}download/ \
+                 https://web.archive.org/web/20230718143137/${homepage}download/ \
                  https://github.com/raforg/${name}/releases/download/v${version}/ \
                  https://codeberg.org/raforg/${name}/releases/download/v${version}/
-checksums        rmd160 d597aca2b6c82b35a811830adf2c18200aa26729 \
-                 sha256 28417b939c0b59c1e069258110b9267b44ed6bea41771e6609545eca696301ae \
-                 size 54590
+checksums        rmd160  ce7b310967bcc81678a9cd3e1bf890df90cb7ae2 \
+                 sha256  179730da7e8d7b68f62b92292b7bc883922fa5cb8361eba22666a1fa6886e10e \
+                 size    56860
 
 post-patch {
     # Set the installation prefix
@@ -76,7 +79,6 @@ post-patch {
     reinplace -W ${worksrcpath} "s|sha256sum|gsha256sum|g" danectl danectl.1
 }
 
-use_configure       no
 build {}
 
 test.run            yes
